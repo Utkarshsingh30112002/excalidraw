@@ -27,7 +27,7 @@ jobs:
           context: .
           file: docker/Dockerfile.frontend
           push: true
-          tags: Utkarshsingh8871/excalidraw-frontend:${{ github.sha }}
+          tags: utkarshsingh8871/excalidraw-frontend:${{ github.sha }}
           build-args: |
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
