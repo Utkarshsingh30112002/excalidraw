@@ -1,32 +1,33 @@
 import express from 'express';
-const {prismaClient} =require('db/client');
+import {prismaClient} from '@repo/db/client';
 import jwt from 'jsonwebtoken';
 import {jwtSecret} from "backend-common/constants";
 import bcrypt from 'bcrypt';
 import {z} from 'zod';
 import { middleware } from './middleware';
-import { CreateUserSchema,SigninSchema } from '@repo/common/types';
+import { CreateUserSchema,SigninSchema,CreateRoomSchema } from '@repo/common/types';
 
 const app=express();
 app.use(express.json());
 
 app.post('/signup', async(req, res) => {
     try{
-    const validBody = CreateUserSchema.safeParse(req.body);
-    if(!validBody.success) {
+    const parsedData = CreateUserSchema.safeParse(req.body);
+    if(!parsedData.success) {
         res.status(400).json({ error: 'Invalid request body' });
         return;
     }
-    const {username,password}=req.body;
-    if (!username || !password) {
-        res.status(400).json({ error: 'Username and password are required' });
+    const {email,password,name}=parsedData.data;
+    if (!email || !password) {
+        res.status(400).json({ error: 'email and password are required' });
         return;
     }
     const hashedPassword=await bcrypt.hash(password, 5);
     const user =await prismaClient.user.create({
         data:{
-            username,
-            password: hashedPassword
+            email,
+            password: hashedPassword,
+            name
         }
     })
     res.json({ message: 'User created successfully', user });
@@ -40,18 +41,18 @@ app.post('/signup', async(req, res) => {
 
 app.post('/signin', async (req, res) => {
     try{
-        const validBody = SigninSchema.safeParse(req.body);
-    if(!validBody.success) {
+        const parsedData = SigninSchema.safeParse(req.body);
+    if(!parsedData.success) {
         res.status(400).json({ error: 'Invalid request body' });
         return;
     }
-    const {username,password}=req.body;
-    if (!username || !password) {
-        res.status(400).json({ error: 'Username and password are required' });
+    const {email,password}=parsedData.data;
+    if (!email || !password) {
+        res.status(400).json({ error: 'email and password are required' });
         return;
     }
     const user=await prismaClient.user.findUnique({
-        where:{username}
+        where:{email}
     })
     if(!user) {
         res.status(404).json({ error: 'User not found' });
@@ -62,7 +63,7 @@ app.post('/signin', async (req, res) => {
         res.status(401).json({ error: 'Invalid password' });
         return;
     }
-    const token =jwt.sign({username},jwtSecret)
+    const token =jwt.sign({email,userId:user.id},jwtSecret)
     res.setHeader('authorization', token);  
 
     res.json({ message: 'User signed in successfully', user, token });
@@ -75,9 +76,40 @@ app.post('/signin', async (req, res) => {
     
 })
 
-app.get('/rooms',middleware, async (req, res) => {
-    res.json({ message: 'Welcome to the rooms endpoint', username: (req as any).username });
-})
+app.post('/room',middleware, async (req, res) => {
+    try{
+    const parsedData=CreateRoomSchema.safeParse(req.body);
+    if(!parsedData.success) {
+        res.status(400).json({ error: 'Invalid request body' });
+        return;
+    }
+    //@ts-ignore
+    const adminId=req.user.id;
+    const room =await prismaClient.room.create({
+        data:{
+            slug: parsedData.data.name,
+            adminId: adminId
+        }
+    })
+    res.json({ message: 'Room created successfully', room });
+} catch (error) {
+    res.status(400).json({error:"room already exists or invalid data"});
+}
 
+})
+app.get('/chats',middleware,async(req,res)=>{
+    const roomId=req.query.roomId as string;
+    if(!roomId) {
+        res.status(400).json({ error: 'roomId is required' });
+        return;
+    }
+    const intRoomId=parseInt(roomId, 10);
+    const chats=await prismaClient.chat.findMany({
+        take: 100,
+        where: {
+            roomId: intRoomId
+        },
+    })
+})
 
 app.listen(3001);

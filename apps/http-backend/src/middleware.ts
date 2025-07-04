@@ -12,7 +12,9 @@ export function middleware(req: Request, res: Response, next: NextFunction) {
   const decoded =jwt.verify(token,jwtSecret);
   if(decoded){
     // @ts-ignore: TODO: add types to express request
-    req.username=decoded.username;
+    req.email=decoded.email;
+    // @ts-ignore: TODO: add types to express request
+    req.userId=decoded.userId;
     next();
   }else {
     res.status(403).json({ error: "Unauthorized" });

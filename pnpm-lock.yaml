@@ -23,6 +23,9 @@ importers:
       '@repo/common':
         specifier: workspace:*
         version: link:../../packages/common
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
@@ -41,9 +44,6 @@ importers:
       bcrypt:
         specifier: ^6.0.0
         version: 6.0.0
-      db:
-        specifier: workspace:*
-        version: link:../../packages/db
       express:
         specifier: ^5.1.0
         version: 5.1.0
@@ -93,15 +93,15 @@ importers:
 
   apps/ws-backend:
     dependencies:
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
       '@types/jsonwebtoken':
         specifier: ^9.0.9
         version: 9.0.9
-      '@types/ws':
-        specifier: ^8.18.1
-        version: 8.18.1
       backend-common:
         specifier: workspace:*
         version: link:../../packages/backend-common
@@ -111,6 +111,10 @@ importers:
       ws:
         specifier: ^8.18.2
         version: 8.18.2
+    devDependencies:
+      '@types/ws':
+        specifier: ^8.18.1
+        version: 8.18.1
 
   packages/backend-common:
     devDependencies:

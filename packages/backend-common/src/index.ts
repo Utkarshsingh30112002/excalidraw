@@ -1,1 +1,1 @@
-export const jwtSecret=process.env.JWT_SECRET||"utkarsh";
+export const jwtSecret=process.env.JWT_SECRET||"abcder";

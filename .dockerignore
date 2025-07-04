@@ -1,0 +1,39 @@
+# Ignore dependency folders
+**/node_modules
+.pnpm
+
+# Ignore build outputs
+**/dist
+**/.next
+**/build
+**/.turbo
+
+# Ignore environment and secrets
+.env
+.env.*           # .env.local, .env.production, etc.
+*.pem
+*.key
+*.crt
+
+# Ignore lockfiles other than pnpm
+package-lock.json
+yarn.lock
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Git and Docker
+.git
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Optional: test coverage
+coverage

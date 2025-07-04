@@ -9,14 +9,17 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "backend-common": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@repo/db":"workspace:*",
     "@types/jsonwebtoken": "^9.0.9",
-    "@types/ws": "^8.18.1",
+    "backend-common": "workspace:*",
     "jsonwebtoken": "^9.0.2",
     "ws": "^8.18.2"
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "@types/ws": "^8.18.1"
+  }
 }
