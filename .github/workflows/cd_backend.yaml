@@ -33,14 +33,17 @@ jobs:
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
 
-      - name: deploy code to vm
+      - name: Deploy code to VM
         run: |
-          echo "${{secrets.SSH_PRIVATE_KEY}}" &> ~/ssh_key
-          mkdir /home/runner/.ssh
-          chmod 600 /home/runner/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
+          chmod 600 ~/ssh_key
+          mkdir -p ~/.ssh
+
           ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@167.71.224.99 -t "
-          docker stop excalidraw-backend && 
-          docker run --name user_backend -d -p 3001:3001  
-          -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
-          -e DATABASE_URL=${{ secrets.DATABASE_URL }} \ 
-          utkarshsingh8871/excalidraw-backend:${{ github.sha }}"
+            docker stop excalidraw-backend || true &&
+            docker rm excalidraw-backend || true &&
+            docker run --name excalidraw-backend \
+              -d -p 3001:3001 \
+              -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+              -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+              utkarshsingh8871/excalidraw-backend:${{ github.sha }}"
