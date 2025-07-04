@@ -37,7 +37,7 @@ jobs:
         run: |
           echo "${{secrets.SSH_PRIVATE_KEY}}" &> ~/ssh_key
           mkdir /home/runner/.ssh
-          chmod 700 /home/runner/.ssh
+          chmod 600 /home/runner/.ssh
           ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@167.71.224.99 -t "
           docker stop excalidraw-backend && 
           docker run --name user_backend -d -p 3001:3001  
