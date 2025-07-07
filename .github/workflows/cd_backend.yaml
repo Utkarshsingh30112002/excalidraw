@@ -6,6 +6,10 @@ name: Continuous Deployment Backend
 on:
   push:
     branches: [main]
+    paths:
+      - 'apps/http-backend'
+      - 'packages'
+      - docker/Dockerfile.backend
 jobs:
   build:
     runs-on: ubuntu-latest

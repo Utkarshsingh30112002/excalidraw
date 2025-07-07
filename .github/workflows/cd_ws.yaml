@@ -6,6 +6,10 @@ name: Continuous Deployment WS
 on:
   push:
     branches: [main]
+    paths:
+      - 'apps/ws-backend'
+      - 'packages'
+      - 'docker/Dockerfile.ws'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,3 +35,18 @@ jobs:
           build-args: |
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
+      
+      - name: Deploy code to VM
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
+          chmod 600 ~/ssh_key
+          mkdir -p ~/.ssh
+
+          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@167.71.224.99 -t "
+            docker stop excalidraw-ws || true &&
+            docker rm excalidraw-ws || true &&
+            docker run --name excalidraw-ws \
+              -d -p 8080:8080 \
+              -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+              -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+              utkarshsingh8871/excalidraw-ws:${{ github.sha }}"

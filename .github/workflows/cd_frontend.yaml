@@ -6,6 +6,10 @@ name: Continuous Deployment Frontend
 on:
   push:
     branches: [main]
+    paths:
+      - 'apps/web'
+      - 'packages'
+      - 'docker/Dockerfile.frontend'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,3 +35,17 @@ jobs:
           build-args: |
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
+
+      - name: Deploy code to vm
+        run: |
+          echo "${{ secrets..SSH_PRIVATE_KEY}}" > ~/ssh_key
+          chmod 600 ~/ssh_key
+          mkdir -p ~/.ssh
+          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@167.71.224.99 -t "
+            docker stop excalidraw-frontend || true &&
+            docker rm excalidraw-frontend || true &&
+            docker run --name excalidraw-frontend \
+              -d -p 3000:3000
+              -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+              -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+              utkarshsingh8871/excalidraw-frontend:${{ github.sha }}"
