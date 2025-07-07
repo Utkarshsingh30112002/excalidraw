@@ -7,9 +7,10 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/ws-backend'
-      - 'packages'
-      - 'docker/Dockerfile.ws'
+      - "apps/ws-backend"
+      - "packages"
+      - "docker/Dockerfile.ws"
+      - ".github/workflows/cd_ws.yaml"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -35,7 +36,7 @@ jobs:
           build-args: |
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
-      
+
       - name: Deploy code to VM
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
