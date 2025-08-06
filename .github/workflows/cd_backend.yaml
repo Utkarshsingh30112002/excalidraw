@@ -9,7 +9,8 @@ on:
     paths:
       - 'apps/http-backend'
       - 'packages'
-      - docker/Dockerfile.backend
+      - 'docker/Dockerfile.backend'
+      - '.github/workflows/cd_backend.yaml'
 jobs:
   build:
     runs-on: ubuntu-latest

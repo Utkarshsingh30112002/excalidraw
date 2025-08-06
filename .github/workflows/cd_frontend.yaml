@@ -7,9 +7,10 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/web'
-      - 'packages'
-      - 'docker/Dockerfile.frontend'
+      - "apps/web"
+      - "packages"
+      - "docker/Dockerfile.frontend"
+      - ".github/workflows/cd_frontend.yaml"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -38,7 +39,7 @@ jobs:
 
       - name: Deploy code to vm
         run: |
-          echo "${{ secrets..SSH_PRIVATE_KEY}}" > ~/ssh_key
+          echo "${{ secrets.SSH_PRIVATE_KEY}}" > ~/ssh_key
           chmod 600 ~/ssh_key
           mkdir -p ~/.ssh
           ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@167.71.224.99 -t "
