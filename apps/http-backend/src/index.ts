@@ -111,5 +111,29 @@ app.get('/chats',middleware,async(req,res)=>{
         },
     })
 })
+let balance:{[key:string]:number} = {};
+
+app.get('/balance',(req,res)=>{
+    const number=req.body.number as string;
+    if(!number) {
+        res.status(400).json({ error: 'number is required' });
+        return;
+    }
+    res.json({balance: balance[number] || 0});
+})
+
+app.post('/balance', (req, res) => {
+    const { number, amount } = req.body;
+    if (!number || !amount) {
+        res.status(400).json({ error: 'number and amount are required' });
+        return;
+    }
+    if (!balance[number]) {
+        balance[number] = 0;
+    }
+    balance[number] += amount;
+    res.json({ message: 'Balance updated successfully', balance: balance[number] });
+});
+
 
 app.listen(3001);
